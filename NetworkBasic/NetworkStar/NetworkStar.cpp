@@ -79,25 +79,31 @@ int main()
 	std::cout << "\r\n";
 
 	std::cout << "원\r\n";
-	int r = 10;
+	
+	int r = 20;
+	int powR = pow(r / 2, 2); // 맨 처음만 실행하면 되는 연산
+	int powY; // for문 한번 돌 때마다 실행하면 되는 연산
 
-	for (int i = 0; i < r; ++i)
+	for (int i = 0; i < r; ++++i)
 	{
+		powY = pow(i - r / 2, 2);
+
 		for (int j = 0; j < r; ++j)
 		{
-			if(pow(i - r / 2, 2) + pow(j - r / 2, 2) < pow(r / 2 , 2))
-			{
-				std::cout << "*";
-			}
-			else
-			{
-				std::cout << " ";
-			}
+			std::cout << ((powY + pow(j - r / 2, 2) < powR) ? "*" : " ");
+
+			// if(powY + pow(j - r / 2, 2) < powR)
+			// {
+			// 	std::cout << "*";
+			// }
+			// else
+			// {
+			// 	std::cout << " ";
+			// }
 		}
 
 		std::cout << "\r\n";
 	}
-
 
 	return(0);
 }
