@@ -123,6 +123,51 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &33924788
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 33924790}
+  - component: {fileID: 33924789}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &33924789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 33924788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ac88be74b3f55b9485e86aaf9d875e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabUnit: {fileID: 0}
+  mainChar: {fileID: 2717718422909073371}
+--- !u!4 &33924790
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 33924788}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &49197857
 GameObject:
   m_ObjectHideFlags: 0
@@ -881,7 +926,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 0
+  orthographic: 1
   orthographic size: 5
   m_Depth: -1
   m_CullingMask:
@@ -1786,7 +1831,37 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2717718422311925774, guid: af07003fa26f4e3fa8ecdb72977ed300, type: 3}
       propertyPath: m_Name
-      value: humanIcon
+      value: mainChar
+      objectReference: {fileID: 0}
+    - target: {fileID: 2717718422311925775, guid: af07003fa26f4e3fa8ecdb72977ed300, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2717718422311925775, guid: af07003fa26f4e3fa8ecdb72977ed300, type: 3}
+      propertyPath: m_Color.g
+      value: 0.620383
+      objectReference: {fileID: 0}
+    - target: {fileID: 2717718422311925775, guid: af07003fa26f4e3fa8ecdb72977ed300, type: 3}
+      propertyPath: m_Color.r
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: af07003fa26f4e3fa8ecdb72977ed300, type: 3}
+--- !u!1 &2717718422909073371 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2717718422311925774, guid: af07003fa26f4e3fa8ecdb72977ed300, type: 3}
+  m_PrefabInstance: {fileID: 2717718422909073370}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2717718422909073372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2717718422909073371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a85819fa42d34084b8140e2a7bd2b8f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bMoveable: 0
