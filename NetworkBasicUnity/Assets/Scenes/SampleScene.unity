@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.4465785, g: 0.49641252, b: 0.574817, a: 1}
+  m_IndirectSpecularColor: {r: 0.4465791, g: 0.4964133, b: 0.57481784, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 33924790}
   - component: {fileID: 33924789}
+  - component: {fileID: 33924791}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -152,7 +153,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ac88be74b3f55b9485e86aaf9d875e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefabUnit: {fileID: 0}
+  nickName: {fileID: 339795854}
+  prefabUnit: {fileID: 2717718422311925774, guid: af07003fa26f4e3fa8ecdb72977ed300, type: 3}
   mainChar: {fileID: 2717718422909073371}
 --- !u!4 &33924790
 Transform:
@@ -168,6 +170,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &33924791
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 33924788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 043c4781574e674dda824dee4b064d31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &49197857
 GameObject:
   m_ObjectHideFlags: 0
@@ -572,7 +586,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 538464638}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 33924789}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: OnLogin
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &538464638
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1660,7 +1686,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1923043523}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 33924789}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: OnLogout
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1923043523
 MonoBehaviour:
   m_ObjectHideFlags: 0

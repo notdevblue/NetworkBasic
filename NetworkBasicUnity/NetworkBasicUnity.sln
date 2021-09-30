@@ -29,12 +29,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Rider.Editor", "Unity
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.VSCode.Editor", "Unity.VSCode.Editor.csproj", "{a8a045e0-285a-f071-2df7-38dbe1729577}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.SysrootPackage.Editor", "Unity.SysrootPackage.Editor.csproj", "{0ad36482-cafa-e298-1e70-dfd8815a311c}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Sysroot.Linux_x86_64", "Unity.Sysroot.Linux_x86_64.csproj", "{54e0e99f-d139-75df-e386-a686fb204a97}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Toolchain.Linux-x86_64", "Unity.Toolchain.Linux-x86_64.csproj", "{79049007-b5fa-fcfa-aeb5-df3c17e693da}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,12 +62,6 @@ Global
 		{f715467a-f81c-102f-6c94-ee4e2b451a8e}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{a8a045e0-285a-f071-2df7-38dbe1729577}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{a8a045e0-285a-f071-2df7-38dbe1729577}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0ad36482-cafa-e298-1e70-dfd8815a311c}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0ad36482-cafa-e298-1e70-dfd8815a311c}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{54e0e99f-d139-75df-e386-a686fb204a97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{54e0e99f-d139-75df-e386-a686fb204a97}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{79049007-b5fa-fcfa-aeb5-df3c17e693da}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{79049007-b5fa-fcfa-aeb5-df3c17e693da}.Debug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
