@@ -19,6 +19,8 @@ public class SocketModule : MonoBehaviour
 
     bool bRunning = false;
 
+    public string ipaddr = "172.31.0.235";
+
     public static SocketModule GetInstance()
     {
         return instance;
@@ -44,20 +46,28 @@ public class SocketModule : MonoBehaviour
 
     public void Login(string id)
     {
-        if(!bRunning)
+        try
         {
-            clientSocket = new TcpClient();
-            clientSocket.Connect("localhost", 8888);
-            serverStream = clientSocket.GetStream();
+            if (!bRunning)
+            {
+                clientSocket = new TcpClient();
+                clientSocket.Connect(ipaddr, 8888);
+                serverStream = clientSocket.GetStream();
 
-            byte[] outStream = Encoding.ASCII.GetBytes(id + "$");
-            serverStream.Write(outStream, 0, outStream.Length);
-            serverStream.Flush();
+                byte[] outStream = Encoding.ASCII.GetBytes(id + "$");
+                serverStream.Write(outStream, 0, outStream.Length);
+                serverStream.Flush();
 
-            Thread ctThread = new Thread(getMessage);
-            ctThread.Start();
-            bRunning = true;
-            nickName = id;
+                Thread ctThread = new Thread(getMessage);
+                ctThread.Start();
+                bRunning = true;
+                nickName = id;
+            }
+        }
+        catch(Exception ex)
+        {
+            Debug.LogError("Login error");
+            Debug.LogError(ex.Message + "\n" + ex.StackTrace);
         }
     }
 
@@ -90,7 +100,11 @@ public class SocketModule : MonoBehaviour
             serverStream.Close();
             serverStream = null;
         }
-        clientSocket.Close();
+
+        if(clientSocket != null)
+        {
+            clientSocket.Close();
+        }
     }
 
     public bool IsOnline()
