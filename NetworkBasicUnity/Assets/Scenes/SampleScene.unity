@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ac88be74b3f55b9485e86aaf9d875e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nickName: {fileID: 339795854}
+  nickname: {fileID: 339795854}
   prefabUnit: {fileID: 2717718422311925774, guid: af07003fa26f4e3fa8ecdb72977ed300, type: 3}
   mainChar: {fileID: 2717718422909073371}
 --- !u!4 &33924790
@@ -182,7 +182,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 043c4781574e674dda824dee4b064d31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ipaddr: 172.31.0.184
+  ipaddr: 127.0.0.1
 --- !u!1 &49197857
 GameObject:
   m_ObjectHideFlags: 0

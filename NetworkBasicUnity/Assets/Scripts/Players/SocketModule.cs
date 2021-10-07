@@ -1,34 +1,32 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using System;
 using System.Threading;
 using System.Net.Sockets;
 using System.Text;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class SocketModule : MonoBehaviour
 {
     static SocketModule instance = null;
-
     private TcpClient clientSocket;
     private GameManager gm;
-
+    // private Thread clientReceiveThread;
     private NetworkStream serverStream = default(NetworkStream);
+    /*
+    TcpClient clientSocket = new TcpClient();
+    */
     private Queue<string> msgQueue;
-    private string nickName;
-
+    private string nickname;
+    //string readData = null;
     bool bRunning = false;
-
-    public string ipaddr = "172.31.0.235";
 
     public static SocketModule GetInstance()
     {
         return instance;
     }
-
     private void Awake()
     {
-        if(instance == null)
+        if (instance == null)
         {
             instance = this;
         }
@@ -38,120 +36,107 @@ public class SocketModule : MonoBehaviour
         }
     }
 
-    private void Start()
+    // Start is called before the first frame update
+    void Start()
     {
         msgQueue = new Queue<string>();
         gm = GetComponent<GameManager>();
     }
-
+    // Update is called once per frame
+    void Update()
+    {
+    }
     public void Login(string id)
     {
-        try
+        if (!bRunning)
         {
-            if (!bRunning)
-            {
-                clientSocket = new TcpClient();
-                clientSocket.Connect(ipaddr, 8888);
-                serverStream = clientSocket.GetStream();
-
-                byte[] outStream = Encoding.ASCII.GetBytes(id + "$");
-                serverStream.Write(outStream, 0, outStream.Length);
-                serverStream.Flush();
-
-                Thread ctThread = new Thread(getMessage);
-                ctThread.Start();
-                bRunning = true;
-                nickName = id;
-            }
-        }
-        catch(Exception ex)
-        {
-            Debug.LogError("Login error");
-            Debug.LogError(ex.Message + "\n" + ex.StackTrace);
+            clientSocket = new TcpClient();
+            clientSocket.Connect("localhost", 8888);
+            serverStream = clientSocket.GetStream();
+            // register login name as string id
+            byte[] outStream = Encoding.ASCII.GetBytes(id + "$");
+            serverStream.Write(outStream, 0, outStream.Length);
+            serverStream.Flush();
+            Thread ctThread = new Thread(getMessage);
+            ctThread.Start();
+            bRunning = true;
+            nickname = id;
         }
     }
-
     public void SendData(string str)
     {
-        if(bRunning && serverStream != null) // <= Safety code
+        if (bRunning && serverStream != null)
         {
             byte[] outStream = Encoding.ASCII.GetBytes("$" + str);
             serverStream.Write(outStream, 0, outStream.Length);
             serverStream.Flush();
         }
     }
-
     private void StopThread()
     {
         bRunning = false;
-    }
 
+    }
     public void Logout()
     {
-        if(bRunning)
+        // stop thread
+        if (bRunning)
         {
             StopThread();
             msgQueue.Clear();
-            nickName = "";
+            nickname = "";
         }
-        
-        if(serverStream != null)
+        if (serverStream != null)
         {
             serverStream.Close();
             serverStream = null;
         }
-
-        if(clientSocket != null)
-        {
-            clientSocket.Close();
-        }
+        clientSocket.Close();
     }
-
     public bool IsOnline()
     {
         return bRunning;
     }
-
     public string GetNextData()
     {
-        if(msgQueue.Count > 0)
+        if (msgQueue.Count > 0)
         {
             string nextMsg = msgQueue.Dequeue();
             return nextMsg;
         }
         return null;
     }
-
-    private void getMessage() // 스레드 처리
+    // 소켓으로부터데이터를받는부분- 스레드처리
+    private void getMessage()
     {
         byte[] inStream = new byte[1024];
         string returndata = "";
-
         try
         {
-            while(bRunning)
+            while (bRunning)
             {
                 serverStream = clientSocket.GetStream();
+
                 int buffSize = 0;
                 buffSize = clientSocket.ReceiveBufferSize;
                 int numBytesRead;
-
-                if(serverStream.DataAvailable)
+                if (serverStream.DataAvailable)
                 {
                     returndata = "";
-                    while(serverStream.DataAvailable)
+                    while (serverStream.DataAvailable)
                     {
-                        numBytesRead = serverStream.Read(inStream, 9, inStream.Length);
+                        numBytesRead = serverStream.Read(inStream, 0, inStream.Length);
                         returndata += Encoding.ASCII.GetString(inStream, 0, numBytesRead);
                     }
-
-                    //gm.QueueCommand(returnadata);
+                    //readData = "" + returndata;
+                    //msgQueue.Enqueue(returndata);
+                    // command detected
+                    gm.QueueCommand(returndata);
                     Debug.Log(returndata);
                 }
-
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             StopThread();
         }
