@@ -12,8 +12,7 @@ namespace ConsoleApplication1
         public static Hashtable clientsList = new Hashtable();
 
         private static int userCount = 0;
-        private static Mutex mut = new Mutex();
-
+        static public readonly object socketLock = new object();
 
         static void Main(string[] args)
         {
@@ -94,7 +93,6 @@ namespace ConsoleApplication1
 
         public static void broadcast(string msg, string uName, bool flag)
         {
-            mut.WaitOne();
             Byte[] broadcastBytes = null;
 
             if (flag == true)
@@ -113,10 +111,15 @@ namespace ConsoleApplication1
                 broadcastSocket = hc.clientSocket;
                 NetworkStream broadcastStream = broadcastSocket.GetStream();
 
+                try
+                {
                 broadcastStream.Write(broadcastBytes, 0, broadcastBytes.Length);
                 broadcastStream.Flush();
+                }
+                catch
+                {
+                }
             }
-            mut.ReleaseMutex();
         }  //end broadcast function
 
         public static void UserAdd(string clientNo, TcpClient clientSocket)
@@ -127,21 +130,23 @@ namespace ConsoleApplication1
 
         public static void UserLeft(int userID, string clientID)
         {
-            if (clientsList.ContainsKey(userID))
+            lock (socketLock)
             {
-                broadcast(clientID + "$#Left#", clientID, false);
-                Console.WriteLine("client Left:" + clientID);
+                if (clientsList.ContainsKey(userID))
+                {
+                    broadcast(clientID + "$#Left#", clientID, false);
+                    Console.WriteLine("client Left:" + clientID);
 
-                TcpClient clientSocket = GetSocket(userID);
+                    TcpClient clientSocket = GetSocket(userID);
 
-                clientsList.Remove(userID);
-                clientSocket.Close();
+                    clientsList.Remove(userID);
+                    clientSocket.Close();
+                }
             }
         }
 
         ~Program()
         {
-            mut.Dispose();
         }
     }//end Main class
 
@@ -297,7 +302,7 @@ namespace ConsoleApplication1
                     Console.WriteLine("Error:" + ex.ToString());
                 }
             }//end while
-
+            
             Program.UserLeft(userID, clientID);
             Program.broadcast("User left:" + clientID, "", false);
 

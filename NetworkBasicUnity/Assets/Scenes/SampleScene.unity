@@ -182,7 +182,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 043c4781574e674dda824dee4b064d31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ipaddr: 127.0.0.1
 --- !u!1 &49197857
 GameObject:
   m_ObjectHideFlags: 0
@@ -785,7 +784,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -1690,7 +1689,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 33924789}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: OnLogout
+        m_MethodName: OnLogOut
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
