@@ -113,12 +113,10 @@ namespace ConsoleApplication1
 
                 try
                 {
-                broadcastStream.Write(broadcastBytes, 0, broadcastBytes.Length);
-                broadcastStream.Flush();
+                    broadcastStream.Write(broadcastBytes, 0, broadcastBytes.Length);
+                    broadcastStream.Flush();
                 }
-                catch
-                {
-                }
+                catch { }
             }
         }  //end broadcast function
 
