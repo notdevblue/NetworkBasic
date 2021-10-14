@@ -4,15 +4,59 @@ using System.Net.Sockets;
 using System.Text;
 using System.Collections;
 using System.Net;
+using System.Collections.Generic;
+using System.Timers;
+using System.Numerics;
 
 namespace ConsoleApplication1
 {
     class Program
     {
+        const int TIMER_INTERVAL = 1000; // milisecond
+        public const float SPEED_UNIT = 3.0f; // move distance / sec
+
         public static Hashtable clientsList = new Hashtable();
+        public static Dictionary<string, handleClient> movingUnits = new Dictionary<string, handleClient>();
 
         private static int userCount = 0;
+        public static System.Timers.Timer aTimer;
         static public readonly object socketLock = new object();
+        static private object lockMove = new object();
+
+        private static void SetTimer()
+        {
+            aTimer = new System.Timers.Timer(TIMER_INTERVAL);
+
+            aTimer.Elapsed += OnTimedEvent; // 시간이 지나면 실행됨
+            aTimer.AutoReset = true;
+            aTimer.Enabled = true;
+        }
+
+        static private void OnTimedEvent(Object source, ElapsedEventArgs e)
+        {
+            lock(lockMove)
+            {
+                foreach(var client in movingUnits)
+                {
+                    handleClient hc = client.Value;
+                    if(hc.bMoving)
+                    {
+                        TimeSpan elapsed = DateTime.Now - hc.startTime;
+                        if(elapsed.TotalMilliseconds >= hc.timeArrive)
+                        {
+                            // 도착완료
+                            hc.bMoving = false;
+                            System.Console.WriteLine("unit " + hc.clientID + " arrived");
+                        }
+                        else
+                        {
+                            float ratio = (float)elapsed.TotalMilliseconds / (float)hc.timeArrive;
+                            hc.currentPos = Vector2.Lerp(hc.orgPos, hc.targetPos, ratio);
+                        }
+                    }
+                }
+            }
+        }
 
         static void Main(string[] args)
         {
@@ -25,6 +69,8 @@ namespace ConsoleApplication1
                 int counter = 0;
                 byte[] bytesFrom = new byte[1024];
                 string dataFromClient = "";
+
+                SetTimer();
 
                 serverSocket.Start();
                 Console.WriteLine("Chat Server Started ....");
@@ -94,6 +140,7 @@ namespace ConsoleApplication1
         public static void broadcast(string msg, string uName, bool flag)
         {
             Byte[] broadcastBytes = null;
+            List<object> deletedClients = new List<object>();
 
             if (flag == true)
             {
@@ -103,21 +150,29 @@ namespace ConsoleApplication1
             {
                 broadcastBytes = Encoding.ASCII.GetBytes(msg);
             }
-
-            foreach (DictionaryEntry Item in clientsList)
+            lock (socketLock)
             {
-                TcpClient broadcastSocket;
-                handleClient hc = (handleClient)Item.Value;
-                broadcastSocket = hc.clientSocket;
-                NetworkStream broadcastStream = broadcastSocket.GetStream();
-
-                try
+                foreach (DictionaryEntry Item in clientsList)
                 {
-                    broadcastStream.Write(broadcastBytes, 0, broadcastBytes.Length);
-                    broadcastStream.Flush();
+                    TcpClient broadcastSocket;
+                    handleClient hc = (handleClient)Item.Value;
+                    broadcastSocket = hc.clientSocket;
+                    NetworkStream broadcastStream = broadcastSocket.GetStream();
+
+                    try
+                    {
+                        broadcastStream.Write(broadcastBytes, 0, broadcastBytes.Length);
+                        broadcastStream.Flush();
+                    }
+                    catch (Exception ex)
+                    {
+                        deletedClients.Add(Item.Key);
+                    }
                 }
-                catch { }
             }
+
+            // foreach()
+
         }  //end broadcast function
 
         public static void UserAdd(string clientNo, TcpClient clientSocket)
@@ -143,6 +198,17 @@ namespace ConsoleApplication1
             }
         }
 
+        public static void SetUnitMove(handleClient client)
+        {
+            lock(lockMove)
+            {
+                if(!movingUnits.ContainsKey(client.clientID))
+                {
+                    movingUnits.Add(client.clientID, client);
+                }
+            }
+        }
+
         ~Program()
         {
         }
@@ -154,12 +220,21 @@ namespace ConsoleApplication1
         const string COMMAND_MOVE = "#Move#";
         const string COMMAND_ENTER = "#Enter#";
         const string COMMAND_HISTORY = "#History#";
+        const string COMMAND_ATTACK = "#Attack#";
 
         public TcpClient clientSocket;
         public int userID;
         public string clientID;
+
+        // moving related
+        public Vector2 currentPos;
+        public Vector2 orgPos;
+        public Vector2 targetPos;
         public float targetPosX;
         public float targetPosY;
+        public DateTime startTime;
+        public int timeArrive;
+        public bool bMoving;
 
         private Hashtable clientsList;
         private bool noConnection = false;
@@ -170,6 +245,10 @@ namespace ConsoleApplication1
             this.clientSocket = inClientSocket;
             // this.clNo = clineNo;
             this.clientsList = cList;
+
+            currentPos.X = 0;
+            currentPos.Y = 0;
+            bMoving = false;
 
             Thread ctThread = new Thread(doChat);
             ctThread.Start();
@@ -276,14 +355,37 @@ namespace ConsoleApplication1
                                     var strs = remain.Split(',');
                                     try
                                     {
+                                        orgPos = currentPos;
                                         targetPosX = float.Parse(strs[0]);
                                         targetPosY = float.Parse(strs[1]);
+                                        targetPos.X = targetPosX;
+                                        targetPos.Y = targetPosY;
+                                        startTime = DateTime.Now;
+                                        timeArrive = (int)(Vector2.Distance(orgPos, targetPos) * 1000.0f / Program.SPEED_UNIT);
+                                        bMoving = true;
+
+                                        Program.SetUnitMove(this);
+                                        System.Console.WriteLine("Unit moving start - "  + clientID + " to " + targetPosX + " , " + targetPosY);
                                     }
                                     catch (Exception e)
                                     {
                                     }
+                                    Program.broadcast(dataFromClient, clientID, true);
                                 }
-                                Program.broadcast(dataFromClient, clientID, true);
+                                else if(dataFromClient.StartsWith(COMMAND_ATTACK))
+                                {
+                                    foreach(DictionaryEntry item in clientsList) // LEFTOVER attack command
+                                    {
+                                        handleClient hc = (handleClient)item.Value;
+                                        float dist = Vector2.Distance(this.currentPos, hc.currentPos);
+                                        if(dist < 1.0f) // TODO : debug value
+                                        {
+                                            //Program.broadcast("")
+                                            // TODO : broadcast
+                                        }
+                                    }
+                                }
+                                
                             }
                             else
                             {
