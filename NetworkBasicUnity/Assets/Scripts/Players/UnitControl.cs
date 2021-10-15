@@ -1,12 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UnitControl : MonoBehaviour
 {
     const float speed = 3.0f;
+    const int MAX_HP = 100;
+    const int DROP_HP = 4;
 
     public bool bMoveable = false;
+    public GameObject hpBar;
+    public Button revive;
+
 
     GameManager gm;
     Vector3 targetPos;
@@ -14,6 +20,10 @@ public class UnitControl : MonoBehaviour
 
     float timeToDest;
     float elapsed;
+
+    float elapsedDrop;
+    int currentHP;
+    int maxHP;
 
     bool bMoving;
 
@@ -26,10 +36,27 @@ public class UnitControl : MonoBehaviour
         targetPos = orgPos;
         timeToDest = 0;
         bMoving = false;
+
+        maxHP = MAX_HP;
+        currentHP = maxHP;
+        elapsedDrop = Time.time;
+
+        revive.onClick.AddListener(() => {
+            currentHP = maxHP;
+            hpBar.transform.localScale = Vector3.one;
+            elapsedDrop = Time.time;
+        });
     }
 
     private void Update()
     {
+        if(Time.time > elapsedDrop + 1.0f && currentHP > 0)
+        {
+            elapsedDrop = Time.time;
+            currentHP -= DROP_HP;
+            hpBar.transform.localScale = new Vector3((float)currentHP / (float)maxHP, 1, 1);
+        }
+
         if(bMoving)
         {
             elapsed += Time.deltaTime;
