@@ -10,6 +10,7 @@ public class UnitControl : MonoBehaviour
     const int DROP_HP = 4;
 
     public bool bMoveable = false;
+    public ParticleSystem fxParticle;
     public GameObject hpBar;
     public Button revive;
 
@@ -40,21 +41,16 @@ public class UnitControl : MonoBehaviour
         maxHP = MAX_HP;
         currentHP = maxHP;
         elapsedDrop = Time.time;
-
-        revive.onClick.AddListener(() => {
-            currentHP = maxHP;
-            hpBar.transform.localScale = Vector3.one;
-            elapsedDrop = Time.time;
-        });
     }
 
     private void Update()
     {
+        // SetHP
         if(Time.time > elapsedDrop + 1.0f && currentHP > 0)
         {
             elapsedDrop = Time.time;
             currentHP -= DROP_HP;
-            hpBar.transform.localScale = new Vector3((float)currentHP / (float)maxHP, 1, 1);
+            SetHP(currentHP);
         }
 
         if(bMoving)
@@ -85,6 +81,33 @@ public class UnitControl : MonoBehaviour
         bMoving = true;
     }
 
+    public void DropHP(int drop)
+    {
+        currentHP -= drop;
+        SetHP(currentHP);
+    }
+
+    public void StartFX()
+    {
+        if(currentHP > 0)
+        {
+            fxParticle.Play();
+        }
+    }
+
+    public int GetHP()
+    {
+        return currentHP;
+    }
+
+    public void SetHP(int hp)
+    {
+        hp = Mathf.Clamp(hp, 0, maxHP);
+        currentHP = hp;
+        float ratio = (float)currentHP / maxHP;
+        hpBar.transform.localScale = new Vector3(ratio, 1.0f, 1.0f);
+    }
+
     public void SetColor(Color col)
     {
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
@@ -93,5 +116,13 @@ public class UnitControl : MonoBehaviour
             sr.color = col;
         }
     }
+
+    public void Revive()
+    {
+        currentHP = maxHP;
+        hpBar.transform.localScale = Vector3.one;
+        elapsedDrop = Time.time;
+    }
+
 
 }

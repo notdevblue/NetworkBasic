@@ -37,8 +37,9 @@
   </PropertyGroup>
   <ItemGroup>
      <Compile Include="Assets/Scripts/Players/UnitControl.cs" />
-     <Compile Include="Assets/Scripts/GameManager.cs" />
      <Compile Include="Assets/Scripts/Players/SocketModule.cs" />
+     <Compile Include="Assets/Scripts/GameManager.cs" />
+     <None Include="Assets/Kenney/Particle samples/License.txt" />
     <Reference Include="UnityEngine">
         <HintPath>/home/han/Unity/Hub/Editor/2020.3.19f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>
@@ -617,6 +618,10 @@
       <Project>{98b74297-14b0-d71f-bb4d-b0da8d6b9af0}</Project>
       <Name>Unity.VisualStudio.Editor</Name>
     </ProjectReference>
+    <ProjectReference Include="Unity.Sysroot.Linux_x86_64.csproj">
+      <Project>{54e0e99f-d139-75df-e386-a686fb204a97}</Project>
+      <Name>Unity.Sysroot.Linux_x86_64</Name>
+    </ProjectReference>
     <ProjectReference Include="Unity.Timeline.Editor.csproj">
       <Project>{0bab8764-c062-ecfb-3075-b42c2a0d172b}</Project>
       <Name>Unity.Timeline.Editor</Name>
@@ -628,6 +633,14 @@
     <ProjectReference Include="Unity.TextMeshPro.csproj">
       <Project>{74e01270-c85f-a000-546b-fbe2200821ad}</Project>
       <Name>Unity.TextMeshPro</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.2D.Sprite.Editor.csproj">
+      <Project>{5b2c6840-dacb-c11e-791b-3ecb1fd6742a}</Project>
+      <Name>Unity.2D.Sprite.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.Toolchain.Linux-x86_64.csproj">
+      <Project>{79049007-b5fa-fcfa-aeb5-df3c17e693da}</Project>
+      <Name>Unity.Toolchain.Linux-x86_64</Name>
     </ProjectReference>
     <ProjectReference Include="UnityEditor.UI.csproj">
       <Project>{6457b2ac-44a1-21fd-cfcd-6a8952c5e15e}</Project>
@@ -644,6 +657,10 @@
     <ProjectReference Include="UnityEngine.UI.csproj">
       <Project>{95f1c7f6-321d-1919-a154-29fef9568bec}</Project>
       <Name>UnityEngine.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.SysrootPackage.Editor.csproj">
+      <Project>{0ad36482-cafa-e298-1e70-dfd8815a311c}</Project>
+      <Name>Unity.SysrootPackage.Editor</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

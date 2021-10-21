@@ -14,6 +14,9 @@ namespace ConsoleApplication1
     {
         const int TIMER_INTERVAL = 1000; // milisecond
         public const float SPEED_UNIT = 3.0f; // move distance / sec
+        const float ATTACK_DISTANCE = 3.5f;
+        const string COMMAND_DAMAGE = "#Damage#";
+        const string STRING_TERMINATOR = ";";
 
         public static Hashtable clientsList = new Hashtable();
         public static Dictionary<string, handleClient> movingUnits = new Dictionary<string, handleClient>();
@@ -205,6 +208,37 @@ namespace ConsoleApplication1
                 if(!movingUnits.ContainsKey(client.clientID))
                 {
                     movingUnits.Add(client.clientID, client);
+                }
+            }
+        }
+
+        public static void CheckAndBroadcastDamage(string attackerID)
+        {
+            lock(lockMove)
+            {
+                handleClient hc = movingUnits[attackerID];
+                string msg = "";
+                foreach(var unit in movingUnits)
+                {
+                    handleClient client = unit.Value;
+                    if(hc.clientID != client.clientID)
+                    {
+                        float distance = Vector2.Distance(hc.currentPos, client.currentPos);
+                        if(distance < ATTACK_DISTANCE)
+                        {
+                            if(msg.Length > 0) // 이미 공격당한 사람이 있는 경우
+                            {
+                                msg += ",";
+                            }
+                            msg += client.clientID;
+                        }
+                    }
+                }
+                System.Console.WriteLine("damage = " + msg);
+                if(msg.Length > 0)
+                {
+                    msg = "$" + COMMAND_DAMAGE + msg;
+                    broadcast(msg, hc.clientID, false);
                 }
             }
         }
