@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 public class GameManager : MonoBehaviour
 {
-    private const char CHAR_TERMINATOR = ';';
+    private const string CHAR_TERMINATOR = ";";
     private const char CHAR_COMMA = ',';
     private const int DAMAGE_ATTACK = 30;
 
@@ -118,6 +118,7 @@ public class GameManager : MonoBehaviour
     {
         if (remoteUnits.ContainsKey(id))
         {
+            Debug.Log(coordinates);
             UnitControl uc = remoteUnits[id];
             var strs = coordinates.Split(',');
             Vector3 pos = new Vector3(float.Parse(strs[0]), float.Parse(strs[1]), 0);
@@ -141,6 +142,7 @@ public class GameManager : MonoBehaviour
 
         {
             string id = strs[i];
+            Debug.Log("*id:" + id);
             if (myID.CompareTo(id) != 0)
             {
                 UnitControl uc = AddUnit(id);
@@ -247,7 +249,7 @@ public class GameManager : MonoBehaviour
                     string remain = "";
                     string nextCommand;
                     int idx4 = cmd.IndexOf(CHAR_TERMINATOR, idx3 + 1);
-                    if(idx > idx3)
+                    if(idx4 > idx3)
                     {
                         remain = cmd.Substring(idx3 + 1, idx4 - idx3 - 1);
                         nextCommand = cmd.Substring(idx4 + 1);
@@ -259,7 +261,8 @@ public class GameManager : MonoBehaviour
 
                     Debug.Log("command=" + command + " id=" + id + " remain=" + remain);
                     
-                    if (myID.CompareTo(id) != 0)
+                    #warning History 가 자기 아이디라서 무시함
+                    if (myID.CompareTo(id) != 0) 
                     {
                         switch (command)
                         {

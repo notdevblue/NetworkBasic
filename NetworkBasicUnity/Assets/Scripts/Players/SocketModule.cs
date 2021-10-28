@@ -139,6 +139,7 @@ public class SocketModule : MonoBehaviour
         catch (Exception ex)
         {
             StopThread();
+            Debug.LogError(ex.ToString());
         }
     }
 }

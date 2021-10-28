@@ -71,7 +71,7 @@ namespace ConsoleApplication1
                 TcpClient clientSocket = default(TcpClient);
                 int counter = 0;
                 byte[] bytesFrom = new byte[1024];
-                string dataFromClient = "";
+                // string dataFromClient;
 
                 SetTimer();
 
@@ -83,7 +83,7 @@ namespace ConsoleApplication1
                     counter += 1;
                     clientSocket = serverSocket.AcceptTcpClient();
 
-                    dataFromClient = "";
+                    // dataFromClient = "";
                     /*
                     NetworkStream networkStream = clientSocket.GetStream();
                     int numBytesRead;
@@ -170,6 +170,7 @@ namespace ConsoleApplication1
                     catch (Exception ex)
                     {
                         deletedClients.Add(Item.Key);
+                        System.Console.WriteLine(ex.ToString());
                     }
                 }
             }
@@ -255,6 +256,7 @@ namespace ConsoleApplication1
         const string COMMAND_ENTER = "#Enter#";
         const string COMMAND_HISTORY = "#History#";
         const string COMMAND_ATTACK = "#Attack#";
+        const string STRING_TERMINATOR = ";";
 
         public TcpClient clientSocket;
         public int userID;
@@ -315,7 +317,8 @@ namespace ConsoleApplication1
                     first = false;
                 }
 
-                history += hc.clientID + "," + hc.targetPosX.ToString() + "," + hc.targetPosY.ToString();
+                history += hc.clientID + "," + hc.targetPosX.ToString() + "," + hc.targetPosY.ToString(); // LEFTOVER
+                System.Console.WriteLine("*" + history);
             }
 
             Console.WriteLine("final history = " + history);
@@ -370,8 +373,9 @@ namespace ConsoleApplication1
                             {
                                 // get the ID part only
                                 clientID = dataFromClient.Substring(0, idx);
+                                Program.SetUnitMove(this);
                                 Console.WriteLine(clientID + " enters chat room.");
-                                Program.broadcast(clientID + "$" + COMMAND_ENTER, clientID, false);
+                                Program.broadcast(clientID + "$" + COMMAND_ENTER + STRING_TERMINATOR, clientID, false);
                                 SendHistory(networkStream);
                             }
 
@@ -383,43 +387,32 @@ namespace ConsoleApplication1
                                 Console.WriteLine("From client - " + clientID + " : " + dataFromClient);
 
                                 // 비지니스 로직의 처리
-                                if (dataFromClient.StartsWith(COMMAND_MOVE))
-                                {
-                                    string remain = dataFromClient.Substring(COMMAND_MOVE.Length);
-                                    var strs = remain.Split(',');
-                                    try
-                                    {
-                                        orgPos = currentPos;
-                                        targetPosX = float.Parse(strs[0]);
-                                        targetPosY = float.Parse(strs[1]);
-                                        targetPos.X = targetPosX;
-                                        targetPos.Y = targetPosY;
-                                        startTime = DateTime.Now;
-                                        timeArrive = (int)(Vector2.Distance(orgPos, targetPos) * 1000.0f / Program.SPEED_UNIT);
-                                        bMoving = true;
+                                ProcessCommand(clientID, dataFromClient);
 
-                                        Program.SetUnitMove(this);
-                                        System.Console.WriteLine("Unit moving start - "  + clientID + " to " + targetPosX + " , " + targetPosY);
-                                    }
-                                    catch (Exception e)
-                                    {
-                                    }
-                                    Program.broadcast(dataFromClient, clientID, true);
-                                }
-                                else if(dataFromClient.StartsWith(COMMAND_ATTACK))
-                                {
-                                    foreach(DictionaryEntry item in clientsList) // LEFTOVER attack command
-                                    {
-                                        handleClient hc = (handleClient)item.Value;
-                                        float dist = Vector2.Distance(this.currentPos, hc.currentPos);
-                                        if(dist < 1.0f) // TODO : debug value
-                                        {
-                                            //Program.broadcast("")
-                                            // TODO : broadcast
-                                        }
-                                    }
-                                }
-                                
+                                Program.broadcast(dataFromClient, clientID, true);
+
+                                // if (dataFromClient.StartsWith(COMMAND_MOVE))
+                                // {
+                                //     string remain = dataFromClient.Substring(COMMAND_MOVE.Length);
+                                //     var strs = remain.Split(',');
+                                //     try
+                                //     {
+                                //         orgPos = currentPos;
+                                //         targetPosX = float.Parse(strs[0]);
+                                //         targetPosY = float.Parse(strs[1]);
+                                //         targetPos.X = targetPosX;
+                                //         targetPos.Y = targetPosY;
+                                //         startTime = DateTime.Now;
+                                //         timeArrive = (int)(Vector2.Distance(orgPos, targetPos) * 1000.0f / Program.SPEED_UNIT);
+                                //         bMoving = true;
+                                //         Program.SetUnitMove(this);
+                                //         System.Console.WriteLine("Unit moving start - "  + clientID + " to " + targetPosX + " , " + targetPosY);
+                                //     }
+                                //     catch (Exception e)
+                                //     {
+                                //     }
+                                //     Program.broadcast(dataFromClient + STRING_TERMINATOR, clientID, true);
+                                // }
                             }
                             else
                             {
@@ -438,8 +431,73 @@ namespace ConsoleApplication1
             }//end while
             
             Program.UserLeft(userID, clientID);
-            Program.broadcast("User left:" + clientID, "", false);
+            Program.broadcast("User left:" + clientID + STRING_TERMINATOR, "", false);
 
         }//end doChat
+
+        private string DeleteTerminator(string remain)
+        {
+            int idx = remain.IndexOf(STRING_TERMINATOR);
+            if(idx >= 0)
+            {
+                remain = remain.Substring(0, idx);
+            }
+            return remain;
+        }
+
+        private void ProcessMove(string clientID, string remain)
+        {
+            var strs = remain.Split(',');
+            try
+            {
+                orgPos = currentPos;
+                targetPosX = float.Parse(strs[0]);
+                targetPosY = float.Parse(strs[1]);
+                targetPos.X = targetPosX;
+                targetPos.Y = targetPosY;
+                startTime = DateTime.Now;
+                timeArrive = (int)(Vector2.Distance(orgPos, targetPos) * 1000.0f / Program.SPEED_UNIT);
+                bMoving = true;
+
+                System.Console.WriteLine("Unit moving start - " + clientID + " to " + targetPosX + "," + targetPosY);
+            }
+            catch (Exception e)
+            {
+                System.Console.WriteLine(e);
+            }
+        }
+
+        private void ProcessAttack(string clientID)
+        {
+            System.Console.WriteLine("Attack - " + clientID);
+            Program.CheckAndBroadcastDamage(clientID);
+        }
+
+        private void ProcessCommand(string clientID, string dataFromClient)
+        {
+            if(dataFromClient[0] == '#')
+            {
+                string command;
+                string remain;
+                int idx = dataFromClient.IndexOf('#', 1);
+
+                if(idx > 1)
+                {
+                    command = dataFromClient.Substring(idx + 1);
+                    switch(command)
+                    {
+                        case COMMAND_MOVE:
+                            remain = DeleteTerminator(dataFromClient.Substring(idx + 1));
+                            ProcessMove(clientID, remain);
+                            break;
+
+                        case COMMAND_ATTACK:
+                            ProcessAttack(clientID);
+                            break;
+                    }
+                }
+            }
+        }
+
     } //end class handleClinet
 }//end namespace
